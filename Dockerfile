@@ -5,7 +5,9 @@ RUN pip install \
 	pillow \
 	eventlet \
         flask \
-	python-socketio==4.2.1
+	python-socketio==4.2.1 \
+	torch \
+	torchvision
 
 WORKDIR /workspace/
 
