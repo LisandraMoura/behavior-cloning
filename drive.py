@@ -12,6 +12,46 @@ from PIL import Image
 from flask import Flask
 from io import BytesIO
 
+import torch
+from torch import nn
+from torchvision.transforms import v2
+
+# Get cpu, gpu or mps device for training.
+device = (
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
+)
+print(f"Using {device} device")
+
+# Define model
+class NeuralNetwork(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.flatten = nn.Flatten()
+        self.linear_relu_stack = nn.Sequential(
+            nn.Linear(28*28*3, 512),
+            nn.ReLU(),
+            nn.Linear(512, 512),
+            nn.ReLU(),
+            nn.Linear(512, 1)
+        )
+
+    def forward(self, x):
+        x = self.flatten(x)
+        logits = self.linear_relu_stack(x)
+        return logits.squeeze()
+
+tfms = v2.Compose([
+    v2.Resize((28, 28)),
+    v2.ToImage(),
+    v2.ToDtype(torch.float32, scale=True),
+])
+
+def preprocess(image):
+    return tfms(image)
 
 sio = socketio.Server()
 app = Flask(__name__)
@@ -57,8 +97,9 @@ def telemetry(sid, data):
         # The current image from the center camera of the car
         imgString = data["image"]
         image = Image.open(BytesIO(base64.b64decode(imgString)))
-        image_array = np.asarray(image)
-        #steering_angle = float(model.predict(image_array[None, :, :, :], batch_size=1))
+        img = preprocess(image)
+        with torch.no_grad():
+            steering_angle = float(model(img[None, :, :, :]))
 
         throttle = controller.update(float(speed))
 
@@ -107,16 +148,8 @@ if __name__ == '__main__':
     )
     args = parser.parse_args()
 
-    ## check that model Keras version is same as local Keras version
-    #f = h5py.File(args.model, mode='r')
-    #model_version = f.attrs.get('keras_version')
-    #keras_version = str(keras_version).encode('utf8')
-
-    #if model_version != keras_version:
-    #    print('You are using Keras version ', keras_version,
-    #          ', but the model was built using ', model_version)
-
-    #model = load_model(args.model)
+    model = NeuralNetwork().to(device)
+    #model.load_state_dict(torch.load(args.model))
 
     if args.image_folder != '':
         print("Creating image folder at {}".format(args.image_folder))
