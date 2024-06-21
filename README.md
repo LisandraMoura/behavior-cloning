@@ -4,19 +4,26 @@ Overview
 ---
 This repository contains files to set up the environment and to execute pytorch models for the task of behavior cloning with the udacity car simulator. 
 
+## How to run
 
-### Dependencies
-This lab requires:
+Clone this repo and build the docker image from the Dockerfile inside the repo:
+```sh
+git clone https://github.com/apereiral-ufg/behavior-cloning.git
+cd behavior-cloning
+docker build -t carsim .
+```
+Run a container from the image and forward the port 4567, which is where the simulator publishes its data:
+```sh
+docker run --rm -it -p 4567:4567 -v "$(pwd)":/workspace carsim:latest
+```
+After the container is running, open the simulator and click in the autonomous mode.
+The simulator can be downloaded from [put link here]. 
 
-* [CarND Term1 Starter Kit](https://github.com/udacity/CarND-Term1-Starter-Kit)
+## Details About Files In This Directory
 
 The following resources can be found in this github repository:
 * drive.py
 * video.py
-
-The simulator can be downloaded from [put link here]. 
-
-## Details About Files In This Directory
 
 ### `drive.py`
 
