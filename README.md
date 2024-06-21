@@ -17,7 +17,7 @@ Run a container from the image and forward the port 4567, which is where the sim
 docker run --rm -it -p 4567:4567 -v "$(pwd)":/workspace carsim:latest
 ```
 After the container is running, open the simulator and click in the autonomous mode.
-The simulator can be downloaded from [put link here]. 
+The simulator can be downloaded from [here](https://github.com/udacity/self-driving-car-sim). 
 
 ## Details About Files In This Directory
 
