@@ -134,11 +134,13 @@ def send_control(steering_angle, throttle):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Remote Driving')
-    #parser.add_argument(
-    #    'model',
-    #    type=str,
-    #    help='Path to model h5 file. Model should be on the same path.'
-    #)
+    #comentar para não usar modelo
+    parser.add_argument(
+       'model',
+       type=str,
+       help='Path to model h5 file. Model should be on the same path.'
+    )
+    # até aqui
     parser.add_argument(
         'image_folder',
         type=str,
@@ -149,7 +151,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     model = NeuralNetwork().to(device)
-    #model.load_state_dict(torch.load(args.model))
+    # comentar para não usar modelo
+    model.load_state_dict(torch.load(args.model))
 
     if args.image_folder != '':
         print("Creating image folder at {}".format(args.image_folder))

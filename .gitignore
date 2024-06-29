@@ -1,0 +1,20 @@
+# Arquivos temporários
+temp/
+
+# Logs
+*.log
+
+# Dados grandes ou binários (exemplo usando Git LFS)
+*.csv
+*.jpg
+*.png
+
+# Ignorar um arquivo específico
+config.ini
+
+# Ignorar todos os arquivos em um diretório
+data/*
+
+# Ignorar um diretório inteiro
+DataAndLoader/
+models/
