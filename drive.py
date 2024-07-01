@@ -43,15 +43,43 @@ class NeuralNetwork(nn.Module):
         x = self.flatten(x)
         logits = self.linear_relu_stack(x)
         return logits.squeeze()
+    
+# Função para adicionar sombra aleatória
+# def add_random_shadow(image):
+#     h, w = image.size[1], image.size[0]
+#     x1, x2 = np.random.choice(w, 2, replace=False)
+#     k = h / (x2 - x1)
+#     b = -k * x1
+#     shadow_intensity = 0.5
+#     image_np = np.array(image)
+#     for i in range(h):
+#         c = int((i - b) / k)
+#         if c > 0 and c < w:
+#             image_np[i, :c, :] = (image_np[i, :c, :] * shadow_intensity).astype(np.uint8)
+#     return Image.fromarray(image_np)
 
 tfms = v2.Compose([
     v2.Resize((28, 28)),
     v2.ToImage(),
     v2.ToDtype(torch.float32, scale=True),
+    # Normalização
+    # v2.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
-
-def preprocess(image):
-    return tfms(image)
+# def preprocess(image):
+#     return tfms(image)
+# Função preprocess
+def preprocess(image, augment=False):
+    if augment:
+        # image = add_random_shadow(image)
+        # Deslocamento vertical aleatório
+        v_delta = random.uniform(-0.05, 0.05)
+        top_offset = 0.375 + v_delta
+        bottom_offset = 0.125 + v_delta
+        top = int(top_offset * image.size[1])
+        bottom = int(bottom_offset * image.size[1])
+        image = image.crop((0, top, image.size[0], image.size[1] - bottom))
+    image = tfms(image)
+    return image
 
 sio = socketio.Server()
 app = Flask(__name__)

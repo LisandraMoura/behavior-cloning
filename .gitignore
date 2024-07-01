@@ -18,3 +18,4 @@ data/*
 # Ignorar um diretório inteiro
 DataAndLoader/
 models/
+testes/
